@@ -1,2 +1,2 @@
 # Escolinha-de-Esportes
-Projetinho da Escolinha por Lil_Veraldo
+Projetinho da Escolinha pro Lil_Veraldo
