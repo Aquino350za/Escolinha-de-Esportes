@@ -9,11 +9,18 @@ void main() {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+
+  late final List<Aluno> alunos = criarAlunos();
+
+  List<Aluno> criarAlunos() {
     final profRicardo = Professor(
       idProfessor: 1,
       nome: 'Prof. Ricardo',
@@ -55,7 +62,7 @@ class MainApp extends StatelessWidget {
       descontoAnual: 20.0,
     );
 
-    final List<Aluno> alunos = [
+    final lista = <Aluno>[
       Aluno(
         idAluno: 1,
         nome: 'Gabriel Silva',
@@ -103,7 +110,7 @@ class MainApp extends StatelessWidget {
         telefone: '22999995555',
         responsavel: 'Marcos Almeida',
         cpfResponsavel: '99988877766',
-        professor: null, 
+        professor: null,
         plano: planoTrimestral,
       ),
     ];
@@ -112,34 +119,67 @@ class MainApp extends StatelessWidget {
       idMensalidade: 1,
       valor: planoMensal.calcularValorFinal(),
       dataVencimento: '10/10/2026',
-      aluno: alunos[0],
+      aluno: lista[0],
       plano: planoMensal,
     );
-    alunos[0].adicionarMensalidade(mens1);
 
+    lista[0].adicionarMensalidade(mens1);
+
+    return lista;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Escolinha de Esportes'),
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
+          backgroundColor: const Color.fromARGB(255, 243, 232, 81),
+          foregroundColor: Colors.black,
         ),
         body: ListView.builder(
           itemCount: alunos.length,
           itemBuilder: (context, index) {
             final aluno = alunos[index];
-            final nomeProf = aluno.professor?.nome ?? 'Sem Professor';
-            final modalidade = aluno.professor?.especialidade ?? 'Geral';
-            final nomePlano = aluno.plano?.nome ?? 'Sem Plano';
-            final valorFinal = aluno.plano?.calcularValorFinal() ?? 0.0;
+            final nomeProf =
+                aluno.professor?.nome ?? 'Sem Professor';
+            final modalidade =
+                aluno.professor?.especialidade ?? 'Geral';
+            final nomePlano =
+                aluno.plano?.nome ?? 'Sem Plano';
+            final valorFinal =
+                aluno.plano?.calcularValorFinal() ?? 0.0;
 
             return Card(
               child: ListTile(
                 leading: const Icon(Icons.sports_soccer),
                 title: Text(aluno.nome),
-                subtitle: Text('$modalidade ($nomeProf) · $nomePlano'),
-                trailing: Text('R\$ ${valorFinal.toStringAsFixed(2)}'),
+                subtitle: Text(
+                  '$modalidade ($nomeProf) · $nomePlano',
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'R\$ ${valorFinal.toStringAsFixed(2)}',
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.delete,
+                        color: Color.fromARGB(255, 122, 34, 28),
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          final removido = alunos.removeAt(index);
+
+                          print('ALUNO REMOVIDO: ${removido.nome}');
+                          print('ALUNOS RESTANTES: ${alunos.map((a) => a.nome).toList()}');
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
             );
           },
